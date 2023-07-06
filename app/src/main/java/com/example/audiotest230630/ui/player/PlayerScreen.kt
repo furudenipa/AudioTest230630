@@ -151,21 +151,16 @@ fun playerSeekBar(
     // Sliderの値が変更された場合のコールバックを設定
     val onSliderValueChanged = { value: Float ->
         sliderPosition = value
-        coroutineScope.launch {
-            // UIスレッドでないコンテキストでplayerをシークする
-            withContext(Dispatchers.Default) {
-                playerViewModel.seekTo(value.toLong())
-            }
-        }
     }
 
     Slider(
         value = sliderPosition,
-        onValueChange = {onSliderValueChanged},
+        onValueChange = { value -> onSliderValueChanged(value)},
         valueRange = 0f..max,
         steps = 0,
         modifier = Modifier.fillMaxWidth()
     )
+    Text(text = sliderPosition.toString())
 
 
 }
