@@ -6,5 +6,6 @@ import com.example.audiotest230630.data.Track
 data class PlayerUiState(
     val selectedAudioContent: AudioContent,
     val index: Int,
-    val isPlaying: Boolean
+    val isPlaying: Boolean,
+    val duration: Float
 )

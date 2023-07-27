@@ -131,26 +131,27 @@ fun PlayerScreen() {
         }
         Text(text = playerUiState.isPlaying.toString())
 
-        playerSeekBar(playerViewModel)
+        playerSeekBar(playerViewModel,playerUiState)
     }
 }
 
 @Composable
 fun playerSeekBar(
-    playerViewModel: PlayerViewModel
+    playerViewModel: PlayerViewModel,
+    playerUiState: PlayerUiState
 ){
     val coroutineScope = rememberCoroutineScope()
 
     // playerの再生位置と最大の長さ
-    val position: Float = playerViewModel.currentPosition()
-    val max: Float = playerViewModel.duration()
-
+    var sliderPosition by remember{mutableStateOf(playerViewModel.currentPosition())}
+    var max = playerUiState.duration
     // Sliderの値を監視する状態変数
-    var sliderPosition by remember { mutableStateOf(position) }
+    //var sliderPosition by remember { mutableStateOf(position) }
 
     // Sliderの値が変更された場合のコールバックを設定
     val onSliderValueChanged = { value: Float ->
         sliderPosition = value
+        playerViewModel.seekTo(value.toLong())
     }
 
     Slider(
@@ -161,6 +162,31 @@ fun playerSeekBar(
         modifier = Modifier.fillMaxWidth()
     )
     Text(text = sliderPosition.toString())
-
-
 }
+/*
+@Composable
+fun TrackProgressSlider(
+    playbackState: StateFlow<PlaybackState>,
+    onSeekBarPositionChanged: (Long) -> Unit
+) {
+    val playbackStateValue = playbackState.collectAsState(
+        initial = PlaybackState(0L, 0L)
+    ).value
+    var currentMediaProgress = playbackStateValue.currentPlaybackPosition.toFloat()
+    var currentPosTemp by rememberSaveable { mutableStateOf(0f) }
+
+    Slider(
+        value = if (currentPosTemp == 0f) currentMediaProgress else currentPosTemp,
+        onValueChange = { currentPosTemp = it },
+        onValueChangeFinished = {
+            currentMediaProgress = currentPosTemp
+            currentPosTemp = 0f
+            onSeekBarPositionChanged(currentMediaProgress.toLong())
+        },
+        valueRange = 0f..playbackStateValue.currentTrackDuration.toFloat(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    )
+}
+*/
